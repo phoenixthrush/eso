@@ -1,0 +1,26 @@
+; INPUT START NUM
+MOV EAX 3      ; read integer
+SYSCALL        ; stores in EBX
+MOV EDI EBX    ; save start number in EDI
+
+; INPUT END NUM
+MOV EAX 3      ; read integer
+SYSCALL        ; stores in EBX
+MOV ECX EBX    ; save end number in ECX
+
+; counter
+MOV EBX EDI    ; load start number into EBX
+
+LABEL LOOP
+MOV EAX 1      ; print EBX -> current number
+SYSCALL        ;
+MOV EAX 9      ; print newline
+SYSCALL        ;
+CMP EBX ECX    ; compare counter to end
+JZ END         ; if equal, exit loop
+INC EBX        ; increment counter
+JNZ LOOP       ; jump back to LOOP
+
+LABEL END
+MOV EAX 2      ; exit
+SYSCALL
