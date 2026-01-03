@@ -1,26 +1,67 @@
-; INPUT START NUM
-MOV EAX 3      ; read integer
-SYSCALL        ; stores in EBX
-MOV EDI EBX    ; save start number in EDI
+; Generate random number and limit to 0-100
+MOV EAX 11
+SYSCALL      ; Random number in EBX
+MOV EDI EBX   ; Copy to EDI
+MOV ESI 100
+MOD EDI ESI   ; EDI = random % 100 (0-99)
+ADD EDI 1     ; EDI = 1-100
 
-; INPUT END NUM
-MOV EAX 3      ; read integer
-SYSCALL        ; stores in EBX
-MOV ECX EBX    ; save end number in ECX
+MOV ESI 3     ; Set lives to 3
 
-; counter
-MOV EBX EDI    ; load start number into EBX
+LABEL GUESS_LOOP
+MOV ECX "Guess the number (1-100): "
+MOV EAX 10
+SYSCALL
 
-LABEL LOOP
-MOV EAX 1      ; print EBX -> current number
-SYSCALL        ;
-MOV EAX 9      ; print newline
-SYSCALL        ;
-CMP EBX ECX    ; compare counter to end
-JZ END         ; if equal, exit loop
-INC EBX        ; increment counter
-JNZ LOOP       ; jump back to LOOP
+MOV EAX 3
+SYSCALL      ; User input in EBX
+
+CMP EBX EDI   ; Compare guess with answer
+JZ WIN
+JG HIGH
+JL LOW
+
+; Just in case, should not reach here
+JMP GUESS_LOOP
+
+LABEL WIN
+MOV ECX "You win!"
+MOV EAX 10
+SYSCALL
+MOV EAX 9
+SYSCALL
+JMP END
+
+LABEL HIGH
+MOV ECX "Too high!"
+MOV EAX 10
+SYSCALL
+MOV EAX 9
+SYSCALL
+DEC ESI       ; Lose a life
+CMP ESI 0
+JZ LOSE       ; If no lives left, game over
+JMP GUESS_LOOP
+
+LABEL LOW
+MOV ECX "Too low!"
+MOV EAX 10
+SYSCALL
+MOV EAX 9
+SYSCALL
+DEC ESI       ; Lose a life
+CMP ESI 0
+JZ LOSE       ; If no lives left, game over
+JMP GUESS_LOOP
+
+LABEL LOSE
+MOV ECX "Game over! You ran out of lives."
+MOV EAX 10
+SYSCALL
+MOV EAX 9
+SYSCALL
+JMP END
 
 LABEL END
-MOV EAX 2      ; exit
+MOV EAX 2
 SYSCALL
