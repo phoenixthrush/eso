@@ -291,6 +291,7 @@ def execute(program):
 # CMP reg value  -> Compare register with value (sets ZF)
 # JZ label       -> jump to label if ZF == 1
 # JNZ label      -> jump to label if ZF == 0
+# JMP label      -> unconditional jump to label
 # SYSCALL        -> call the syscall defined in EAX
 # LABEL name     -> defines a label for jumps
 
@@ -301,11 +302,14 @@ def execute(program):
 # 1  -> print integer stored in EBX
 # 2  -> exit program
 # 3  -> read integer from user input into EBX
-# 4  -> read string from user input into ECX
+# 4  -> read string from user input into ECX (prompts with ECX content if set)
 # 5  -> read single character from user input into EDX (ASCII code)
 # 6  -> print all registers (debug)
 # 7  -> print current syscall code (EAX)
 # 8  -> bitwise NOT on EBX (flips all bits, two's complement)
+# 9  -> print newline
+# 10 -> print string stored in ECX
+# 11 -> generate random integer (0 to 2^64-1) and store in EBX
 
 
 if __name__ == "__main__":
