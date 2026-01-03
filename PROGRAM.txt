@@ -18,8 +18,8 @@ SYSCALL             ; User input in EBX
 
 CMP EBX EDI         ; Compare guess with answer
 JZ WIN
-JG HIGH
-JL LOW
+JA HIGH   ; unsigned greater
+JB LOW    ; unsigned less
 
 LABEL WIN
 MOV ECX "You win!"

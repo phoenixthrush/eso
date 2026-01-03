@@ -211,10 +211,12 @@ def execute(program):
         elif op == "CMP":
             _, reg, value = instr
             val = regs[value] if isinstance(value, str) else value
-            result = regs[reg] - val
+            before = regs[reg]
+            result = before - val
             regs["ZF"] = int(result == 0)
             regs["SF"] = int(result < 0)
-            regs["OF"] = 0  # we can ignore signed overflow for small integers
+            regs["CF"] = int(before < val)  # unsigned comparison
+            regs["OF"] = 0
             ip += 1
 
         elif op == "JNZ":
@@ -242,6 +244,20 @@ def execute(program):
             _, target = instr
             if regs["SF"] != regs["OF"]:
                 ip = labels[target]
+            else:
+                ip += 1
+
+        elif op == "JA":  # jump if above (unsigned >)
+            _, target = instr
+            if regs["CF"] == 0 and regs["ZF"] == 0:
+                ip = labels[target] if isinstance(target, str) else target
+            else:
+                ip += 1
+
+        elif op == "JB":  # jump if below (unsigned <)
+            _, target = instr
+            if regs["CF"] == 1:
+                ip = labels[target] if isinstance(target, str) else target
             else:
                 ip += 1
 
@@ -288,9 +304,13 @@ def execute(program):
 # MUL dest src   -> multiply dest by src
 # DIV dest src   -> divide dest by src (integer division)
 # MOD dest src   -> remainder of dest divided by src
-# CMP reg value  -> Compare register with value (sets ZF)
-# JZ label       -> jump to label if ZF == 1
-# JNZ label      -> jump to label if ZF == 0
+# CMP reg value  -> Compare register with value (sets ZF, CF, SF, OF)
+# JZ label       -> jump to label if ZF == 1 (equal)
+# JNZ label      -> jump to label if ZF == 0 (not equal)
+# JA label       -> jump if above (unsigned >)
+# JB label       -> jump if below (unsigned <)
+# JG label       -> jump if greater (signed >)
+# JL label       -> jump if less (signed <)
 # JMP label      -> unconditional jump to label
 # SYSCALL        -> call the syscall defined in EAX
 # LABEL name     -> defines a label for jumps
