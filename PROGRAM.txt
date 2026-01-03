@@ -1,9 +1,8 @@
-; Random Number Guessing Game 0-100
+; Random Number Guessing Game 1-100
 MOV EAX 11
 SYSCALL             ; Random number in EBX
 MOV EDI EBX         ; Copy to EDI
-MOV ESI 100
-MOD EDI ESI         ; EDI = random % 100 (0-99)
+MOD EDI 100         ; EDI = random % 100
 ADD EDI 1           ; EDI = 1-100
 
 MOV ESI 3           ; Set lives to 3
@@ -11,15 +10,15 @@ MOV ESI 3           ; Set lives to 3
 LABEL GUESS_LOOP
 MOV ECX "Guess the number (1-100): "
 MOV EAX 10
-SYSCALL
+SYSCALL             ; Prompt
 
 MOV EAX 3
-SYSCALL             ; User input in EBX
+SYSCALL             ; Read guess into EBX
 
-CMP EBX EDI         ; Compare guess with answer
+CMP EBX EDI
 JZ WIN
-JA HIGH   ; unsigned greater
-JB LOW    ; unsigned less
+JA HIGH
+JB LOW
 
 LABEL WIN
 MOV ECX "You win!"
@@ -35,9 +34,8 @@ MOV EAX 10
 SYSCALL
 MOV EAX 9
 SYSCALL
-DEC ESI             ; Lose a life
-CMP ESI 0
-JZ LOSE             ; If no lives left, game over
+DEC ESI
+JZ LOSE            ; Jump directly if lives == 0
 JMP GUESS_LOOP
 
 LABEL LOW
@@ -46,9 +44,8 @@ MOV EAX 10
 SYSCALL
 MOV EAX 9
 SYSCALL
-DEC ESI             ; Lose a life
-CMP ESI 0
-JZ LOSE             ; If no lives left, game over
+DEC ESI
+JZ LOSE
 JMP GUESS_LOOP
 
 LABEL LOSE
@@ -57,7 +54,6 @@ MOV EAX 10
 SYSCALL
 MOV EAX 9
 SYSCALL
-JMP END
 
 LABEL END
 MOV EAX 2
